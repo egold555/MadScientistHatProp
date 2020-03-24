@@ -47,6 +47,9 @@ const int numbers[10][7]= {
 
 byte savedMultiplexNumber[4]{0,0,0,0};
 
+int randomLedPins[5] = {A1, A2, A3, A4, A5};
+bool randomLedStates[5] = {false, false, false, false};
+
 // the setup routine runs once when you press reset:
 void setup() {                
   // initialize the digital pins as outputs.
@@ -61,9 +64,13 @@ void setup() {
   pinMode(D1, OUTPUT);  
   pinMode(D2, OUTPUT);  
   pinMode(D3, OUTPUT);  
-  pinMode(D4, OUTPUT);  
+  pinMode(D4, OUTPUT);
 
-  randomSeed(analogRead(A5));
+  for(int i = 0; i < 5; i++){
+    pinMode(randomLedPins[i], OUTPUT);
+  }  
+
+  randomSeed(analogRead(A6));
 }
 
 
@@ -88,10 +95,12 @@ int count = 0;
 
 void loop() {
   updateDisplays(); 
+  updateLeds();
 
   if(count > COUNT_TIME_RANDOMIZE){
     count = 0;
     randomiseDisplays();
+    randomizeRandomLeds();
   }
 
   count++;
@@ -103,6 +112,17 @@ void randomiseDisplays(){
   savedMultiplexNumber[display] = number;
 }
 
+void randomizeRandomLeds(){
+  int pin = random(5);
+  bool state = (random(2) == 0);
+  randomLedStates[pin] = state;
+}
+
+void updateLeds(){
+  for(int i = 0; i < 5; i++){
+    digitalWrite(randomLedPins[i], randomLedStates[i] ? LOW : HIGH);
+  }
+}
 
 void updateDisplays(){
     for(byte i = 0; i < 4; i++){
